@@ -1,0 +1,20 @@
+# ── 공모전 제공 원본·실제 수치: 절대 올리지 않는다 ──
+data/*.csv
+data/synthetic/
+private/
+output/
+work/
+*.pkl
+review_evidence_real*.json
+review_evidence.json
+
+# 공공데이터 원본(내려받은 파일은 용량이 커서 제외, 가공본만 data/external/에 둔다)
+data/external/raw/*
+!data/external/raw/.gitkeep
+
+# 실행 흔적
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+.venv/

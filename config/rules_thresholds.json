@@ -1,0 +1,75 @@
+{
+  "_comment": "검토 규칙의 운영 임계값을 한곳에서 관리하는 설정 파일. 09_make_evidence.py, 10_verify_evidence.py, 11_threshold_decision.py, 12_insights_figures.py가 모두 이 파일을 읽는다. 값은 통계적 유의수준이 아니라 질문을 띄울 지점을 정한 운영 기준이며 근거는 docs/임계값_결정표.md에 있다.",
+  "dataset_versions": {
+    "real": "real-003",
+    "demo": "demo-2.1-003",
+    "schema": "2.1"
+  },
+  "thresholds": {
+    "R02_R08_low_percentile": 20,
+    "small_size_percentile": 20,
+    "R03_min_foreign_amount_percentile": 50,
+    "R03_type_top_percentile": 30,
+    "R04_season_index_min": 1.10,
+    "R04_season_index_min_small": 1.15,
+    "R04_season_index_min_very_small": 1.30,
+    "R04_small_percentile": 30,
+    "R04_very_small_percentile": 10,
+    "R12_low_foreign_share_percentile": 20,
+    "R11_visitor_to_resident_ratio": 1.0
+  },
+  "threshold_notes": {
+    "R02_R08_low_percentile": "업종(업종x연령) 비중이 255개 시군구 분포의 하위 20% 이하. 결제 0은 '결제 없음'으로 따로 표시",
+    "small_size_percentile": "6개월 총 결제금액 하위 20% = 소액 지역(화면 문구용)",
+    "R03_min_foreign_amount_percentile": "외국인 결제 규모 상위 50%만 유형 표시",
+    "R03_type_top_percentile": "편의점+슈퍼마켓, 일반한식 비중 각 상위 30%. 생활유통 조건을 먼저 본다",
+    "R04_season_index_min": "결제 규모 하위 30% 초과 지역의 시기 지수 기준",
+    "R04_season_index_min_small": "결제 규모 하위 10% 초과~30% 이하 지역",
+    "R04_season_index_min_very_small": "결제 규모 하위 10% 이하 지역",
+    "R04_small_percentile": "R04 규모 구간 경계. 소액 지역 표시(20%)와 목적이 달라 따로 둔다",
+    "R04_very_small_percentile": "R04 규모 구간 경계",
+    "R12_low_foreign_share_percentile": "외국인 결제 비중 하위 20% 이하",
+    "R11_visitor_to_resident_ratio": "목표 방문객 / 주민등록 인구 1.0 이상(잠정)"
+  },
+  "rule_settings": {
+    "R04_period": {
+      "short_project_days": 31,
+      "note": "사업 기간이 31일 미만이고 카드 지표를 직접 성과평가에 쓰면 질문. 월 단위 집계와 단기 사업을 구분하는 구현 기준이며 통계적 임계값이 아니다"
+    },
+    "R04_season": {
+      "index_definition": "(월 일평균 / 6개월 일평균) / 전국 같은 값. 일수 보정 후 전국 월 흐름을 뺀 지역 특이 지수",
+      "threshold_method": "1 + 2.5 x 규모 구간별 견고 표준편차(MAD x 1.4826)를 실무적으로 반올림",
+      "sigma_bands_percentile": [0, 10, 20, 30, 50, 100],
+      "multiplier": 2.5
+    },
+    "R08": {
+      "display_level": "reference",
+      "reason": "업종x연령 하위 20% 기준의 반기 재현성이 0.75로 R02(0.81)보다 낮아 확정 판정이 아니라 참고용으로 표시"
+    }
+  },
+  "reproducibility": {
+    "split_1": ["2026-01", "2026-02", "2026-03"],
+    "split_2": ["2026-04", "2026-05", "2026-06"],
+    "stable_target": 0.8,
+    "reported": {
+      "R02": 0.81,
+      "R12": 0.79,
+      "R08": 0.75,
+      "R03": 0.91
+    },
+    "tolerance": 0.01
+  },
+  "expected_real": {
+    "_comment": "실제 원본(2026-01~06)으로 확인한 집계값. 10_verify_evidence.py --mode real 에서 재현 여부를 확인한다. 시군구별 값은 없다",
+    "raw_rows": 242574,
+    "regions": 255,
+    "months": 6,
+    "industries": 11,
+    "no_payment_entries": 57,
+    "r03_types": {"생활유통형": 39, "한식외식형": 39, "복합형": 50},
+    "small_regions": 51,
+    "r04_flagged_regions": 30,
+    "r12_low_regions": 51,
+    "population_total": 51084159
+  }
+}
